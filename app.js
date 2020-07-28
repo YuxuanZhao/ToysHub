@@ -1,9 +1,11 @@
-var express = require("express");
-var app = express();
+var express = require("express"),
+    app     = express();
+    
+app.use(express.static("pages"));
+app.set("view engine", "ejs");
 
-//route: / => Hi there!
 app.get("/", function(req, res){
-    res.send("Hi there!");
+    res.render("../pages/landing");
 });
 
 app.get("*", function(req, res){
