@@ -1,7 +1,19 @@
+<%- include ('partials/header') %>
+
 <h1>This is toys!</h1>
 
 <% for (i = 0; i < toys.length; i++) { %>
-    <img src = "<%= toys[i].picture %>">
-    <p><%= toys[i].name%></p>
-  <p><%= toys[i].description%></p>
+    <div class = "col-d-3 col-sm-6">
+        <div class="thumbnail">
+            <img src = "<%= toys[i].picture %>">
+            <div class="caption">
+                <p><%= toys[i].name%></p>
+            </div>
+            <p>
+                <a href = "/toys/<%= toys[i]._id %>" class = "btn btn-primary">More Info</a>    
+            </p>
+        </div>
+    </div>
 <% } %>
+
+<%- include ('partials/footer') %>
