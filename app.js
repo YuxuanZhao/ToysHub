@@ -32,11 +32,11 @@ var Toy = mongoose.model("Toy", toySchema);
 // });
 
 app.get("/", function(req, res){
-    res.render("../pages/landing");
+    res.render("landing");
 });
 
 app.get("/toys/new", function(req, res){
-    res.render("../pages/newToy");
+    res.render("newToy");
 });
 
 app.get("/toys", function(req, res){
@@ -45,7 +45,7 @@ app.get("/toys", function(req, res){
       if (err){
           console.log(err);
       } else {
-          res.render("../pages/toys", {toys: toys});
+          res.render("toys", {toys: toys});
       } 
     });
     
