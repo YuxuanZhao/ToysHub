@@ -4,6 +4,7 @@ var express = require("express"),
     bodyParser = require("body-parser");
     
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.static("toys"));
 
 app.set("view engine", "ejs");
 mongoose.connect("mongodb://localhost/toys_hub", {useNewUrlParser: true, useUnifiedTopology: true});
@@ -28,7 +29,7 @@ app.get("/toys", function(req, res){
       if (err){
           console.log(err);
       } else {
-          res.render("toys", {toys: toys});
+          res.render("toys/toys", {toys: toys});
       } 
     });
     
@@ -36,7 +37,7 @@ app.get("/toys", function(req, res){
 
 //create a new toy form
 app.get("/toys/new", function(req, res){
-    res.render("newToy");
+    res.render("toys/newToy");
 });
 
 //create a new toy post
@@ -52,7 +53,7 @@ app.post("/toys", function(req, res){
         if (err){
             console.log(err);
         } else {
-            res.redirect("/toys");
+            res.redirect("toys/toys");
         }
     });
 });
@@ -65,7 +66,7 @@ app.get("/toys/:id", function(req, res){
            return res.redirect("/toys");
        } else {
            console.log(foundToy);
-           res.render("show", {toy: foundToy});
+           res.render("toys/toy", {toy: foundToy});
        }
    }) 
 });
