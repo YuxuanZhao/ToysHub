@@ -1,0 +1,21 @@
+<%- include ('../partials/header') %>
+
+<h1>Create a new comment</h1>
+
+<form action = "/toys/<%= toyId %>/comment" method = "POST">
+    
+    <div class="form-group">
+        <label for="author">Author name</label>
+        <input class = "form-control" type = "text" name = "author" placeholder = "Author name">
+    </div>
+    
+    <div class="form-group">
+        <label for="content">Comment content</label>
+        <input class = "form-control" type = "text" name = "content" placeholder = "Comment content">
+    </div>
+    
+    <button class = "btn btn-lg btn-primary btn-block">Submit!</button>
+
+</form>
+
+<%- include ('../partials/footer') %>

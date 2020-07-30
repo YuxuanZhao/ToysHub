@@ -6,4 +6,21 @@
 
 <p><%= toy.description %></p>
 
+
+<form action = "/toys/<%= toy._id %>/comment/new" method="GET" style = "display: inline">
+    <button class = "btn btn-lg btn-primary">New Comment</button>
+</form>
+    	
+<form action = "/toys/<%= toy._id %>?_method=PUT" method="POST" style = "display: inline">
+    <button class = "btn btn-lg btn-success">Update this toy</button>
+</form>
+<form action = "/toys/<%= toy._id %>?_method=DELETE" method="POST" style = "display: inline">
+	<button class = "btn btn-lg btn-warning">Delete this toy</button>
+</form>
+
+<h1>Comments:</h1>
+<% toy.comments.forEach (function (comment){ %>
+<p><strong><%= comment.author %></strong> - <%= comment.content %></p>
+<% }); %>
+
 <%- include ('../partials/footer') %>

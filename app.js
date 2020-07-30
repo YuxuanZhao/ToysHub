@@ -9,10 +9,23 @@ app.use(express.static("toys"));
 app.set("view engine", "ejs");
 mongoose.connect("mongodb://localhost/toys_hub", {useNewUrlParser: true, useUnifiedTopology: true});
 
+var commentSchema = new mongoose.Schema({
+    author: String,
+    content: String
+});
+
+var Comment = mongoose.model("Comment", commentSchema);
+
 var toySchema = new mongoose.Schema({
     name: String,
     picture: String,
-    description: String
+    description: String,
+    comments: [
+      {
+         type: mongoose.Schema.Types.ObjectId,
+         ref: "Comment"
+      }
+    ]
 });
 
 var Toy = mongoose.model("Toy", toySchema);
@@ -42,7 +55,6 @@ app.get("/toys/new", function(req, res){
 
 //create a new toy post
 app.post("/toys", function(req, res){
-    console.log(req.body);
     var newToy = {
         name: req.body.name,
         picture: req.body.picture,
@@ -53,7 +65,7 @@ app.post("/toys", function(req, res){
         if (err){
             console.log(err);
         } else {
-            res.redirect("toys/toys");
+            res.redirect("/toys");
         }
     });
 });
@@ -69,6 +81,47 @@ app.get("/toys/:id", function(req, res){
            res.render("toys/toy", {toy: foundToy});
        }
    }) 
+});
+
+//create a new comment page
+app.get("/toys/:id/comment/new", function(req, res){
+    res.render("comments/newComment", {toyId: req.params.id});
+});
+
+//create a new comment
+//重定向回/toys/:id
+app.post("/toys/:id/comment", function(req, res){
+    var newComment = {
+        author: req.body.author,
+        content: req.body.content
+    };
+    
+    Comment.create(newComment, function(err, newCreatedComment){
+        
+        Toy.findOne({_id: req.params.id}, function(err, foundToy){
+        
+            if (err){
+                console.log(err);
+            } else {
+                foundToy.comments.push(newCreatedComment);
+                foundToy.save(function(err, data){
+                    if(err){
+                        console.log(err);
+                    }else{
+                        console.log(data);
+                    }
+                });
+            }
+            res.redirect("/toys/" + req.params.id);
+        });
+    });
+});
+
+
+//edit a comment
+app.get("/toys/:id/comment/:comment_id/edit", function(req, res){
+    //需要传入这个comment的数据
+    res.render("comments/editComment");
 });
 
 //all other pages
