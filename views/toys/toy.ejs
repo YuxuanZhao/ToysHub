@@ -1,26 +1,55 @@
 <%- include ('../partials/header') %>
+<div class = "row">
+    <div class = "col-md-9">
+        <div class = "thumbnail">
+            <img src = "<%= toy.picture %>" class = "img-responsive">
+            <div style = "padding: 19px">
+                <div class = "caption-full">
+                    <h4 class = "pull-right"><%= toy.price %></h4>
+                    <h4><%= toy.name %></h4>
+                    <p><%= toy.description %></p>
+                </div>
+                <form action = "/toys/<%= toy._id %>?_method=PUT" method="POST" style = "display: inline">
+                    <button class = "btn btn-success">Update</button>
+                </form>
+                <form action = "/toys/<%= toy._id %>?_method=DELETE" method="POST" style = "display: inline">
+                	<button class = "btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
-<h1>This is <%= toy.name %></h1>
 
-<img src = "<%= toy.picture %>">
+    <div class = "col-md-3">
+        <div class = "well">
+            <div class = "text-right">
+                <form action = "/toys/<%= toy._id %>/comment/new" method="GET">
+                    <button class = "btn btn-primary">Comment here!</button>
+                </form>
+            </div>
+            
+            <hr>
 
-<p><%= toy.description %></p>
+            <% toy.comments.forEach (function (comment){ %>
+            <div class = "row">
+                
+                <div class = "col-md-12">
+                <h4><%= comment.author %></h4>
+                <p><%= comment.content %></p>
+                <form action = "/toys/<%= toy._id %>/comment/<%= comment._id %>" method="GET" style = "display: inline">
+                    <button class = "btn btn-success">Update</button>
+                </form>
+                <form action = "/toys/<%= toy._id %>/comment/<%= comment._id %>?_method=DELETE" method="POST" style = "display: inline">
+                	<button class = "btn btn-danger">Delete</button>
+                </form>
+                
+                <div></div>
+                
+            <div>
+            <% }); %>
+        </div>
+    </div>
 
-
-<form action = "/toys/<%= toy._id %>/comment/new" method="GET" style = "display: inline">
-    <button class = "btn btn-lg btn-primary">New Comment</button>
-</form>
-    	
-<form action = "/toys/<%= toy._id %>?_method=PUT" method="POST" style = "display: inline">
-    <button class = "btn btn-lg btn-success">Update this toy</button>
-</form>
-<form action = "/toys/<%= toy._id %>?_method=DELETE" method="POST" style = "display: inline">
-	<button class = "btn btn-lg btn-warning">Delete this toy</button>
-</form>
-
-<h1>Comments:</h1>
-<% toy.comments.forEach (function (comment){ %>
-<p><strong><%= comment.author %></strong> - <%= comment.content %></p>
-<% }); %>
+</div>
 
 <%- include ('../partials/footer') %>

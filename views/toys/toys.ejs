@@ -1,11 +1,18 @@
 <%- include ('../partials/header') %>
-
+	<header class = "jumbotron">
+		<h1>️ToysHub🤖 </h1>
+		<p>
+		    A place for you to share your collections!
+		    <a class = "btn btn-lg btn-primary pull-right" href = "/toys/new">New Post!</a>
+	    </p>
+	</header>
+<div class = "row text-center" >
 <% for (i = 0; i < toys.length; i++) { %>
     <div class = "col-md-3 col-sm-6">
         <div class="thumbnail">
             <img src = "<%= toys[i].picture %>">
             <div class="caption">
-                <p><%= toys[i].name%></p>
+                <h4><%= toys[i].name%></h4>
             </div>
             <p>
                 <a href = "/toys/<%= toys[i]._id %>" class = "btn btn-primary">More Info</a>    
@@ -13,5 +20,6 @@
         </div>
     </div>
 <% } %>
+</div>
 
 <%- include ('../partials/footer') %>

@@ -1,8 +1,10 @@
 <%- include ('../partials/header') %>
 
-<h1>Create a new comment</h1>
+<h1 style="text-align: center">Create a new comment for <%= toy.name %></h1>
 
-<form action = "/toys/<%= toyId %>/comment" method = "POST">
+<div style = "width: 30%; margin: 30px auto;">
+
+<form action = "/toys/<%= toy._id %>/comment" method = "POST">
     
     <div class="form-group">
         <label for="author">Author name</label>
@@ -17,5 +19,7 @@
     <button class = "btn btn-lg btn-primary btn-block">Submit!</button>
 
 </form>
+
+</div>
 
 <%- include ('../partials/footer') %>
