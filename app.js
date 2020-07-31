@@ -9,14 +9,28 @@ var express = require("express"),
     localStrategy = require("passport-local"),
     User = require("./models/user");
     
-    
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(__dirname + "/public"));
-
 app.set("view engine", "ejs");
 mongoose.connect("mongodb://localhost/toys_hub", {useNewUrlParser: true, useUnifiedTopology: true});
-
 seedDB();
+
+//Passport Configuration
+app.use(require("express-session")({
+    secret: "A secret",
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new localStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+app.use(function(req, res, next){
+    res.locals.currentUser = req.user;
+    next();
+});
 
 //landing page
 app.get("/", function(req, res){
@@ -74,7 +88,7 @@ app.get("/toys/:id", function(req, res){
 });
 
 //NEW - a page to create a new comment
-app.get("/toys/:id/comment/new", function(req, res){
+app.get("/toys/:id/comment/new",  isLoggedIn, function(req, res){
     Toy.findById(req.params.id, function(err, toy){
         if (err){
             console.log(err);
@@ -85,7 +99,7 @@ app.get("/toys/:id/comment/new", function(req, res){
 });
 
 //CREATE - create a new comment in DB
-app.post("/toys/:id/comment", function(req, res){
+app.post("/toys/:id/comment", isLoggedIn, function(req, res){
     var newComment = {
         author: req.body.author,
         content: req.body.content
@@ -155,10 +169,52 @@ app.get("/toys/:id/comment/:commentId", function(req, res){
     });
 });
 
+//auth route
+//show register form
+app.get("/register", function(req, res){
+    res.render("register");
+});
+
+app.post("/register", function(req, res){
+    var newUser = new User({username: req.body.username});
+    User.register(newUser, req.body.password, function(err, user){
+        if (err){
+            console.log(err);
+            return res.render("register");
+        } else {
+            passport.authenticate("local")(req, res, function(){
+                res.redirect("/toys");
+            });
+        }
+    });
+});
+
+//show login 
+app.get("/login", function(req, res){
+   res.render("login"); 
+});
+
+app.post("/login", passport.authenticate("local", {successRedirect: "/toys", failureRedirect: "/login"}), function(req, res){
+
+});
+
+//logout
+app.get("/logout", function(req, res){
+    req.logout();
+    res.redirect("/toys");
+})
+
 //handle all others routing
 app.get("*", function(req, res){
    res.send("Page not found!"); //work for all links that are not defined 
 });
+
+function isLoggedIn(req, res, next){
+    if (req.isAuthenticated()){
+        return next();
+    }
+    res.redirect("/login");
+}
 
 //tell Express to listen for request (specify by Cloud9)
 app.listen(process.env.PORT, process.env.IP, function(){

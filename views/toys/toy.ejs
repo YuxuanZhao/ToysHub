@@ -10,7 +10,7 @@
                     <p><%= toy.description %></p>
                 </div>
                 <form action = "/toys/<%= toy._id %>?_method=PUT" method="POST" style = "display: inline">
-                    <button class = "btn btn-success">Update</button>
+                    <button class = "btn btn-primary">Update</button>
                 </form>
                 <form action = "/toys/<%= toy._id %>?_method=DELETE" method="POST" style = "display: inline">
                 	<button class = "btn btn-danger">Delete</button>
@@ -37,7 +37,7 @@
                 <h4><%= comment.author %></h4>
                 <p><%= comment.content %></p>
                 <form action = "/toys/<%= toy._id %>/comment/<%= comment._id %>" method="GET" style = "display: inline">
-                    <button class = "btn btn-success">Update</button>
+                    <button class = "btn btn-primary">Update</button>
                 </form>
                 <form action = "/toys/<%= toy._id %>/comment/<%= comment._id %>?_method=DELETE" method="POST" style = "display: inline">
                 	<button class = "btn btn-danger">Delete</button>
