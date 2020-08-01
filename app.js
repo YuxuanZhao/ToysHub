@@ -7,7 +7,8 @@ var express = require("express"),
     User = require("./models/user"),
     seedDB      = require("./seeds"),
     passport    = require("passport"),
-    localStrategy = require("passport-local");
+    localStrategy = require("passport-local"),
+    methodOverride = require("method-override");
     
 var commentRoutes = require("./routes/comments"),
     toyRoutes   = require("./routes/toys"),
@@ -15,9 +16,10 @@ var commentRoutes = require("./routes/comments"),
     
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(__dirname + "/public"));
+app.use(methodOverride("_method"));
 app.set("view engine", "ejs");
 mongoose.connect("mongodb://localhost/toys_hub", {useNewUrlParser: true, useUnifiedTopology: true});
-seedDB();
+//seedDB();
 
 //Passport Configuration
 app.use(require("express-session")({
@@ -35,7 +37,6 @@ app.use(function(req, res, next){
     res.locals.currentUser = req.user;
     next();
 });
-
 
 app.use("/toys/:id/comment", commentRoutes);
 app.use("/toys", toyRoutes);

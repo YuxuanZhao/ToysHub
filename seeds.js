@@ -38,26 +38,26 @@ var data = [
 function seedDB(){    
     //remove all toys
     Toy.deleteMany({}, function(err){
-       if (err){
-           console.log(err);
-       } else {
+      if (err){
+          console.log(err);
+      } else {
             Comment.deleteMany({}, function(err){
                 if (err){
                     console.log(err);
                 } else {
                     //create some toys
-                   data.forEach(function(seed){
-                       Toy.create(seed, function(err, toy){
-                           if (err){
-                               console.log(err);
-                           } else {
+                  data.forEach(function(seed){
+                      Toy.create(seed, function(err, toy){
+                          if (err){
+                              console.log(err);
+                          } else {
                                 addComment(toy);
-                           }
-                       });
-                   });
+                          }
+                      });
+                  });
                 }
             });
-       }
+      }
     });
 }
 

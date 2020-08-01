@@ -17,7 +17,10 @@ router.get("/new",  isLoggedIn, function(req, res){
 //CREATE - create a new comment in DB
 router.post("/", isLoggedIn, function(req, res){
     var newComment = {
-        author: req.body.author,
+        author: {
+            id: req.user._id,
+            username: req.user.username
+        },
         content: req.body.content
     };
     
@@ -31,6 +34,9 @@ router.post("/", isLoggedIn, function(req, res){
                 if (err){
                     console.log(err);
                 } else {
+                    // newCreatedComment.author.id = req.user._id;
+                    // newCreatedComment.author.username = req.user.username;
+
                     foundToy.comments.push(newCreatedComment);
                     foundToy.save(function(err, data){
                         if(err){
@@ -46,30 +52,17 @@ router.post("/", isLoggedIn, function(req, res){
 });
 
 //edit a comment in DB
-router.post("/:commentId", function(req, res){
-    Comment.findByIdAndUpdate(req.params.commentId, req.body.content, function(err, content){
-       if(err){
-          console.log(err);
-           res.render("editComment");
-       } else {
-           Toy.findOne({_id: req.params.id}, function(err, foundToy){
-                if (err){
-                    console.log(err);
-                }else{
-                    foundToy.save(function(err, data){
-                        if(err){
-                            console.log(err);
-                        }
-                    });
-                }
-           });
-           res.redirect("/toys/" + req.params.id);
-       }
-   }); 
+router.put("/:commentId", function(req, res){
+    Comment.findOneAndUpdate({_id: req.params.commentId}, {content: req.body.content}, {upsert: true, useFindAndModify: false}, function(err, updatedComment){
+        if (err){
+            console.log(err);
+        }
+        res.redirect("/toys/" + req.params.id);
+    });
 });
 
 //a page to edit a comment
-router.get("/:commentId", function(req, res){
+router.get("/:commentId/edit", function(req, res){
     Toy.findById(req.params.id).populate("comments").exec(function(err, foundToy){
         if (err || !foundToy){
             console.log(err);

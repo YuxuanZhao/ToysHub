@@ -1,0 +1,37 @@
+<%- include ('../partials/header') %>
+
+<h1 style="text-align: center">Edit <%= toy.name %> </h1>
+
+<div style = "width: 30%; margin: 30px auto;">
+    <form action = "/toys/<%= toy._id %>?_method=PUT" method = "POST">
+        
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input class = "form-control" type = "text" name = "toy[name]" value = "<%= toy.name %>">
+        </div>
+        
+        <div class="form-group">
+            <label for="picture">Picture URL</label>
+            <input class = "form-control" type = "text" name = "toy[picture]" value = "<%= toy.picture %>">
+        </div>
+        
+        <div class="form-group">
+            <label for="description">Description</label>
+            <input class = "form-control" type = "text" name = "toy[description]" value = "<%= toy.description %>">
+        </div>
+                
+        <div class="form-group">
+            <label for="price">Price</label>
+            <input class = "form-control" type = "text" name = "toy[price]" value = "<%= toy.price %>">
+        </div>
+        
+        <button class = "btn btn-lg btn-primary btn-block" style = "margin: 10px 0 10px 0">Submit!</button>
+    
+    </form>
+    <a href = "/toys">Back</a>
+
+</div>
+
+
+
+<%- include ('../partials/footer') %>
