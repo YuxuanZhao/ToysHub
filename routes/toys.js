@@ -1,6 +1,7 @@
 var express = require("express"),
     router  = express.Router(),
-    Toy     = require("../models/toy");
+    Toy     = require("../models/toy"),
+    middleware = require("../middleware");
     
 //INDEX - a page showing all toys
 router.get("/", function(req, res){
@@ -15,12 +16,12 @@ router.get("/", function(req, res){
 });
 
 //NEW - a form to create a new toy
-router.get("/new", isLoggedIn, function(req, res){
+router.get("/new", middleware.isLoggedIn, function(req, res){
     res.render("toys/newToy");
 });
 
 //CREATE - create a new toy in DB
-router.post("/", isLoggedIn, function(req, res){
+router.post("/", middleware.isLoggedIn, function(req, res){
     var newToy = {
         name: req.body.name,
         picture: req.body.picture,
@@ -55,14 +56,14 @@ router.get("/:id", function(req, res){
 });
 
 //Edit toy route
-router.get("/:id/edit", checkToyOwnership, function(req, res){
+router.get("/:id/edit", middleware.checkToyOwnership, function(req, res){
     Toy.findById(req.params.id, function(err, toy){
         res.render("toys/editToy", {toy: toy});
     });
 });
 
 //Update toy route
-router.put("/:id", checkToyOwnership, function(req, res){
+router.put("/:id", middleware.checkToyOwnership, function(req, res){
     Toy.findOneAndUpdate({_id: req.params.id}, req.body.toy, {upsert: true, useFindAndModify: false}, function(err, updatedToy){
         if (err){
             console.log(err);
@@ -74,7 +75,7 @@ router.put("/:id", checkToyOwnership, function(req, res){
 });
 
 //Destroy toy route
-router.delete("/:id", checkToyOwnership, function(req, res){
+router.delete("/:id", middleware.checkToyOwnership, function(req, res){
     Toy.findByIdAndRemove(req.params.id, {useFindAndModify: false}, function(err){
         if (err){
             res.redirect("/toys");
@@ -84,31 +85,6 @@ router.delete("/:id", checkToyOwnership, function(req, res){
     });
 });
 
-function checkToyOwnership(req, res, next){
-    if (req.isAuthenticated()){
-        Toy.findById(req.params.id, function(err, toy){
-           if (err){
-               res.redirect("/toys");
-           } else {
-               if (toy.author.id.equals(req.user._id)){
-                    next();
-                } else {
-                   console.log("You don't have permission");
-                    res.redirect("back");
-               }
-           }
-        });
-    }else{
-        console.log("need to login first");
-        res.redirect("back");
-    }
-}
 
-function isLoggedIn(req, res, next){
-    if (req.isAuthenticated()){
-        return next();
-    }
-    res.redirect("/login");
-}
 
 module.exports = router;

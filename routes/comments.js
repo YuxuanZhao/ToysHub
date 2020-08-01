@@ -1,10 +1,11 @@
 var express = require("express"),
     router  = express.Router({mergeParams: true}),
     Comment = require("../models/comment"),
-    Toy     = require("../models/toy");
+    Toy     = require("../models/toy"),
+    middleware = require("../middleware");
     
 //NEW - a page to create a new comment
-router.get("/new",  isLoggedIn, function(req, res){
+router.get("/new", middleware.isLoggedIn, function(req, res){
     Toy.findById(req.params.id, function(err, toy){
         if (err){
             console.log(err);
@@ -15,7 +16,7 @@ router.get("/new",  isLoggedIn, function(req, res){
 });
 
 //CREATE - create a new comment in DB
-router.post("/", isLoggedIn, function(req, res){
+router.post("/", middleware.isLoggedIn, function(req, res){
     var newComment = {
         author: {
             id: req.user._id,
@@ -52,7 +53,7 @@ router.post("/", isLoggedIn, function(req, res){
 });
 
 //edit a comment in DB
-router.put("/:commentId", checkCommentOwnership, function(req, res){
+router.put("/:commentId", middleware.checkCommentOwnership, function(req, res){
     Comment.findOneAndUpdate({_id: req.params.commentId}, {content: req.body.content}, {upsert: true, useFindAndModify: false}, function(err, updatedComment){
         if (err){
             console.log(err);
@@ -62,7 +63,7 @@ router.put("/:commentId", checkCommentOwnership, function(req, res){
 });
 
 //a page to edit a comment
-router.get("/:commentId/edit", checkCommentOwnership, function(req, res){
+router.get("/:commentId/edit", middleware.checkCommentOwnership, function(req, res){
     Toy.findById(req.params.id).populate("comments").exec(function(err, foundToy){
         if (err || !foundToy){
             console.log(err);
@@ -79,7 +80,7 @@ router.get("/:commentId/edit", checkCommentOwnership, function(req, res){
 });
 
 //Destroy comment route
-router.delete("/:commentId", checkCommentOwnership, function(req, res){
+router.delete("/:commentId", middleware.checkCommentOwnership, function(req, res){
     Comment.findByIdAndRemove(req.params.commentId, function(err){
         if (err){
             res.redirect("/toys/" + req.params.id);
@@ -88,33 +89,5 @@ router.delete("/:commentId", checkCommentOwnership, function(req, res){
         }
     });
 });
-
-function isLoggedIn(req, res, next){
-    if (req.isAuthenticated()){
-        return next();
-    }
-    res.redirect("/login");
-}
-
-function checkCommentOwnership(req, res, next){
-    if (req.isAuthenticated()){
-        Comment.findById(req.params.commentId, function(err, comment){
-           if (err){
-               res.redirect("/toys/" + req.params.id);
-           } else {
-               console.log(comment);
-               if (comment.author.id.equals(req.user._id)){
-                    next();
-                } else {
-                   console.log("You don't have permission");
-                    res.redirect("back");
-               }
-           }
-        });
-    }else{
-        console.log("need to login first");
-        res.redirect("back");
-    }
-}
 
 module.exports = router;
