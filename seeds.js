@@ -46,15 +46,15 @@ function seedDB(){
                     console.log(err);
                 } else {
                     //create some toys
-                  data.forEach(function(seed){
-                      Toy.create(seed, function(err, toy){
-                          if (err){
-                              console.log(err);
-                          } else {
-                                addComment(toy);
-                          }
-                      });
-                  });
+                //   data.forEach(function(seed){
+                //       Toy.create(seed, function(err, toy){
+                //           if (err){
+                //               console.log(err);
+                //           } else {
+                //                 addComment(toy);
+                //           }
+                //       });
+                //   });
                 }
             });
       }

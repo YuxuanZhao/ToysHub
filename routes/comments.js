@@ -52,7 +52,7 @@ router.post("/", isLoggedIn, function(req, res){
 });
 
 //edit a comment in DB
-router.put("/:commentId", function(req, res){
+router.put("/:commentId", checkCommentOwnership, function(req, res){
     Comment.findOneAndUpdate({_id: req.params.commentId}, {content: req.body.content}, {upsert: true, useFindAndModify: false}, function(err, updatedComment){
         if (err){
             console.log(err);
@@ -62,7 +62,7 @@ router.put("/:commentId", function(req, res){
 });
 
 //a page to edit a comment
-router.get("/:commentId/edit", function(req, res){
+router.get("/:commentId/edit", checkCommentOwnership, function(req, res){
     Toy.findById(req.params.id).populate("comments").exec(function(err, foundToy){
         if (err || !foundToy){
             console.log(err);
@@ -78,11 +78,43 @@ router.get("/:commentId/edit", function(req, res){
     });
 });
 
+//Destroy comment route
+router.delete("/:commentId", checkCommentOwnership, function(req, res){
+    Comment.findByIdAndRemove(req.params.commentId, function(err){
+        if (err){
+            res.redirect("/toys/" + req.params.id);
+        } else {
+            res.redirect("/toys/" + req.params.id);
+        }
+    });
+});
+
 function isLoggedIn(req, res, next){
     if (req.isAuthenticated()){
         return next();
     }
     res.redirect("/login");
+}
+
+function checkCommentOwnership(req, res, next){
+    if (req.isAuthenticated()){
+        Comment.findById(req.params.commentId, function(err, comment){
+           if (err){
+               res.redirect("/toys/" + req.params.id);
+           } else {
+               console.log(comment);
+               if (comment.author.id.equals(req.user._id)){
+                    next();
+                } else {
+                   console.log("You don't have permission");
+                    res.redirect("back");
+               }
+           }
+        });
+    }else{
+        console.log("need to login first");
+        res.redirect("back");
+    }
 }
 
 module.exports = router;

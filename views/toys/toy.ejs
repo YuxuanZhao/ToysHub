@@ -9,12 +9,14 @@
                     <h4><%= toy.name %></h4>
                     <p><%= toy.description %></p>
                 </div>
-                <form action = "/toys/<%= toy._id %>/edit" method="GET" style = "display: inline">
-                    <button class = "btn btn-primary">Edit</button>
-                </form>
-                <form action = "/toys/<%= toy._id %>?_method=DELETE" method="POST" style = "display: inline">
-                	<button class = "btn btn-danger">Delete</button>
-                </form>
+                <% if (currentUser && toy.author.id.equals(currentUser._id)){ %>
+                    <form class = "delete-form" action = "/toys/<%= toy._id %>/edit" method="GET">
+                        <button class = "btn btn-warning">Edit</button>
+                    </form>
+                    <form class = "delete-form" action = "/toys/<%= toy._id %>?_method=DELETE" method="POST">
+                    	<button class = "btn btn-danger">Delete</button>
+                    </form>
+                <% } %>
                 <span class = "pull-right">Posted by <strong><%= toy.author.username %></strong></span>
             </div>
         </div>
@@ -37,13 +39,14 @@
                 <div class = "col-md-12">
                 <h4><%= comment.author.username %></h4>
                 <p><%= comment.content %></p>
-                <form action = "/toys/<%= toy._id %>/comment/<%= comment._id %>/edit" method="GET" style = "display: inline">
-                    <button class = "btn btn-primary">Edit</button>
-                </form>
-                <form action = "/toys/<%= toy._id %>/comment/<%= comment._id %>?_method=DELETE" method="POST" style = "display: inline">
-                	<button class = "btn btn-danger">Delete</button>
-                </form>
-                
+                <% if (currentUser && comment.author.id.equals(currentUser._id)){ %>
+                    <form class = "delete-form" action = "/toys/<%= toy._id %>/comment/<%= comment._id %>/edit" method="GET">
+                        <button class = "btn btn-warning">Edit</button>
+                    </form>
+                    <form class = "delete-form" action = "/toys/<%= toy._id %>/comment/<%= comment._id %>?_method=DELETE" method="POST">
+                    	<button class = "btn btn-danger">Delete</button>
+                    </form>
+                <% } %>
                 <div></div>
                 
             <div>

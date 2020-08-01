@@ -6,6 +6,6 @@ body{
     width: 100%;
 }
 
-form button .inline {
+.delete-form {
     display: inline;
 }

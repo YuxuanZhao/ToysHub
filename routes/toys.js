@@ -55,18 +55,14 @@ router.get("/:id", function(req, res){
 });
 
 //Edit toy route
-router.get("/:id/edit", function(req, res){
-    Toy.findById(req.params.id).populate("comments").exec(function(err, foundToy){
-        if (err){
-            res.redirect("/toys");
-        } else {
-            res.render("toys/editToy", {toy: foundToy});
-        }
+router.get("/:id/edit", checkToyOwnership, function(req, res){
+    Toy.findById(req.params.id, function(err, toy){
+        res.render("toys/editToy", {toy: toy});
     });
 });
 
 //Update toy route
-router.put("/:id", function(req, res){
+router.put("/:id", checkToyOwnership, function(req, res){
     Toy.findOneAndUpdate({_id: req.params.id}, req.body.toy, {upsert: true, useFindAndModify: false}, function(err, updatedToy){
         if (err){
             console.log(err);
@@ -77,6 +73,36 @@ router.put("/:id", function(req, res){
     });
 });
 
+//Destroy toy route
+router.delete("/:id", checkToyOwnership, function(req, res){
+    Toy.findByIdAndRemove(req.params.id, {useFindAndModify: false}, function(err){
+        if (err){
+            res.redirect("/toys");
+        } else {
+            res.redirect("/toys");
+        }
+    });
+});
+
+function checkToyOwnership(req, res, next){
+    if (req.isAuthenticated()){
+        Toy.findById(req.params.id, function(err, toy){
+           if (err){
+               res.redirect("/toys");
+           } else {
+               if (toy.author.id.equals(req.user._id)){
+                    next();
+                } else {
+                   console.log("You don't have permission");
+                    res.redirect("back");
+               }
+           }
+        });
+    }else{
+        console.log("need to login first");
+        res.redirect("back");
+    }
+}
 
 function isLoggedIn(req, res, next){
     if (req.isAuthenticated()){
