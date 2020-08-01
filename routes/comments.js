@@ -45,6 +45,7 @@ router.post("/", middleware.isLoggedIn, function(req, res){
                         }
                     });
                 }
+                req.flash("success", "Successfully added comment!");
                 //redirect to /toys/:id
                 res.redirect("/toys/" + req.params.id);
             });

@@ -37,6 +37,7 @@ router.post("/", middleware.isLoggedIn, function(req, res){
         if (err){
             console.log(err);
         } else {
+            req.flash("success", "Successfully added toy!");
             res.redirect("/toys");
         }
     });
